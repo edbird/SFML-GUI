@@ -75,6 +75,12 @@ class GUIBox : public GUIBase
         std::cout << "event" << std::endl;
     }
 
+    virtual
+    void setPosition(const int pos_x, const int pos_y)
+    {
+        background.setPosition(pos_x, pos_y);
+    }
+
     sf::RectangleShape& getBackground()
     {
         return background;
@@ -84,6 +90,72 @@ class GUIBox : public GUIBase
 
     //sf::intRect background;
     sf::RectangleShape background;
+
+};
+
+
+class GUIButton : public GUIBox //GUIBase
+{
+
+    public:
+
+    GUIButton(const int size_x, const int size_y)
+        : GUIBox(size_x, size_y)
+        , text_offset_x{4}
+        , text_offset_y{4}
+    {
+        font.loadFromFile("/usr/share/fonts/truetype/noto/NotoSans-Regular.ttf");
+
+        text.setString("button");
+        text.setFont(font);
+        text.setCharacterSize(11);
+    }
+
+    
+    virtual
+    void draw(sf::RenderTarget& target, sf::RenderStates states) const
+    {
+        GUIBox::draw(target, states);
+        target.draw(text);
+    }
+    
+
+    virtual
+    void event(sf::Event& event, sf::RenderWindow& window)
+    {
+        if(event.type == sf::Event::MouseButtonPressed)
+        {
+            sf::IntRect background_rect(GUIBox::background.getGlobalBounds());
+            background_rect.width += 1;
+            background_rect.height += 1;
+            sf::Vector2i mouse_pos_relative(window.mapPixelToCoords(sf::Mouse::getPosition(window)));
+            if(background_rect.contains(mouse_pos_relative))
+            {
+                if(event.mouseButton.button == sf::Mouse::Left)
+                {
+                    std::cout << "left" << std::endl;
+                }
+                else if(event.mouseButton.button == sf::Mouse::Right)
+                {
+                    std::cout << "right" << std::endl;
+                }
+            }
+        }
+    }
+
+    virtual
+    void setPosition(const int pos_x, const int pos_y)
+    {
+        GUIBox::setPosition(pos_x, pos_y);
+        text.setPosition(pos_x + text_offset_x, pos_y + text_offset_y);
+    }
+
+    protected:
+
+    sf::Text text;
+    sf::Font font;
+    int text_offset_x;
+    int text_offset_y;
 
 };
 
@@ -199,6 +271,11 @@ int main()
     guiobject.emplace_back(new GUIBoxDrag(100, 100));
     dynamic_cast<GUIBox*>(guiobject.at(0).get())->getBackground().setFillColor(sf::Color::Black);
     dynamic_cast<GUIBox*>(guiobject.at(0).get())->getBackground().setPosition(200, 200);
+
+    guiobject.emplace_back(new GUIButton(120, 20));
+    dynamic_cast<GUIBox*>(guiobject.back().get())->getBackground().setFillColor(sf::Color(120, 120, 120));
+    dynamic_cast<GUIBox*>(guiobject.back().get())->setPosition(400, 200);
+
 
     // program main loop
     while(window.isOpen())
