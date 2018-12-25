@@ -1,4 +1,8 @@
 
+// Local headers
+#include "GUIBox.hpp"
+#include "GUIBoxDrag.hpp"
+#include "GUIButton.hpp"
 
 
 // SDL headers
@@ -11,243 +15,58 @@
 #include <string>
 
 
-class GUIBase : public sf::Drawable
+
+
+
+
+class Functor
 {
 
-    public:
+    private:
 
-    GUIBase()
+    virtual
+    ~Functor()
     {
     }
 
     virtual
-    ~GUIBase() = 0;
-
-    /*
-    virtual
-    void Draw(sf::RenderWindow& window) const
-    {
-        window.Draw(background);
-    };
-    */
-
-    virtual
-    void event(sf::Event& event, sf::RenderWindow& window) = 0;
-
-    /*
-    virtual
-    void draw(sf::RenderTarget& target, sf::RenderStates states) const
-    {
-        target.draw(background);
-    }
-    */
-
-    protected:
-
+    void operator()() = 0;
 
 
 
 };
 
-GUIBase::~GUIBase() {}
 
 
-class GUIBox : public GUIBase
+
+
+
+
+
+void open(const std::string& filename)
+{
+    std::cout << "open: read from file -> " << filename << std::endl;
+}
+
+void Functor_open : public Functor
 {
 
     public:
 
-    GUIBox(const int size_x, const int size_y)
-        : background(sf::Vector2f(size_x, size_y))
+    Functor_open(const std::string& filename)
+        : filename(filename)
     {
-    }
-
-
-    virtual
-    void draw(sf::RenderTarget& target, sf::RenderStates states) const
-    {
-        target.draw(background);
     }
 
     virtual
-    void event(sf::Event& event, sf::RenderWindow& window)
+    void operator()()
     {
-        std::cout << "event" << std::endl;
-    }
-
-    virtual
-    void setPosition(const int pos_x, const int pos_y)
-    {
-        background.setPosition(pos_x, pos_y);
-    }
-
-    sf::RectangleShape& getBackground()
-    {
-        return background;
+        open(filename)
     }
 
     protected:
 
-    //sf::intRect background;
-    sf::RectangleShape background;
-
-};
-
-
-class GUIButton : public GUIBox //GUIBase
-{
-
-    public:
-
-    GUIButton(const int size_x, const int size_y)
-        : GUIBox(size_x, size_y)
-        , text_offset_x{4}
-        , text_offset_y{4}
-    {
-        font.loadFromFile("/usr/share/fonts/truetype/noto/NotoSans-Regular.ttf");
-
-        text.setString("button");
-        text.setFont(font);
-        text.setCharacterSize(11);
-    }
-
-    
-    virtual
-    void draw(sf::RenderTarget& target, sf::RenderStates states) const
-    {
-        GUIBox::draw(target, states);
-        target.draw(text);
-    }
-    
-
-    virtual
-    void event(sf::Event& event, sf::RenderWindow& window)
-    {
-        if(event.type == sf::Event::MouseButtonPressed)
-        {
-            sf::IntRect background_rect(GUIBox::background.getGlobalBounds());
-            background_rect.width += 1;
-            background_rect.height += 1;
-            sf::Vector2i mouse_pos_relative(window.mapPixelToCoords(sf::Mouse::getPosition(window)));
-            if(background_rect.contains(mouse_pos_relative))
-            {
-                if(event.mouseButton.button == sf::Mouse::Left)
-                {
-                    std::cout << "left" << std::endl;
-                }
-                else if(event.mouseButton.button == sf::Mouse::Right)
-                {
-                    std::cout << "right" << std::endl;
-                }
-            }
-        }
-    }
-
-    virtual
-    void setPosition(const int pos_x, const int pos_y)
-    {
-        GUIBox::setPosition(pos_x, pos_y);
-        text.setPosition(pos_x + text_offset_x, pos_y + text_offset_y);
-    }
-
-    protected:
-
-    sf::Text text;
-    sf::Font font;
-    int text_offset_x;
-    int text_offset_y;
-
-};
-
-
-class GUIBoxDrag : public GUIBox
-{
-
-
-    public:
-
-    GUIBoxDrag(const int size_x, const int size_y)
-        : GUIBox(size_x, size_y)
-        , mouse_down{false}
-    {
-    }
-
-
-    virtual
-    void event(sf::Event& event, sf::RenderWindow& window)
-    {
-        if(event.type == sf::Event::MouseButtonPressed)
-        {
-            if(event.mouseButton.button == sf::Mouse::Left)
-            {
-                sf::IntRect background_rect(GUIBox::background.getGlobalBounds());
-                background_rect.width += 1;
-                background_rect.height += 1;
-                sf::Vector2i mouse_pos_relative(window.mapPixelToCoords(sf::Mouse::getPosition(window)));
-                if(background_rect.contains(mouse_pos_relative))
-                {
-                    mouse_pos_initial = sf::Mouse::getPosition(window);
-                    mouse_pos_final = sf::Mouse::getPosition(window);
-                    mouse_down = true;
-                }
-            }
-        }
-        else if(event.type == sf::Event::MouseButtonReleased)
-        {
-            if(event.mouseButton.button == sf::Mouse::Left)
-            {
-                mouse_down = false;
-                //mouse_pos_final = sf::Mouse::getPosition(window);
-                /*
-                sf::Vector2i mouse_pos_delta(mouse_pos_final - mouse_pos_initial);
-                mouse_pos_initial = mouse_pos_final;
-                GUIBox::background.move(mouse_pos_delta);
-                */
-            }
-        }
-        else if(event.type == sf::Event::MouseMoved)
-        {
-            if(mouse_down == true)
-            {
-                sf::IntRect background_rect(GUIBox::background.getGlobalBounds());
-                background_rect.width += 1;
-                background_rect.height += 1;
-                sf::Vector2i mouse_pos_relative(window.mapPixelToCoords(mouse_pos_initial));
-                if(background_rect.contains(mouse_pos_relative))
-                {
-                    //sf::Vector2i mouse_pos_final{sf::Mouse::getPosition()};
-                    mouse_pos_final = sf::Mouse::getPosition(window);
-                    sf::Vector2i mouse_pos_delta(mouse_pos_final - mouse_pos_initial);
-                    mouse_pos_initial = mouse_pos_final;
-                    GUIBox::background.move(sf::Vector2f(mouse_pos_delta));
-                }
-            }
-            // TODO: new mouse position is different from old (when click happened)
-            /*
-            if(sf::Mouse::isButtonPressed(sf::Mouse::Left))
-            {
-                sf::Vector2i mouse_pos{sf::Mouse::getPosition(window)};
-                sf::IntRect mouse_rect(mouse_pos.x, mouse_pos.y, 0, 0);
-                sf::IntRect background_rect(GUIBox::background.getGlobalBounds());
-                if(background_rect.contains(window.mapPixelToCoords(sf::Mouse::getPosition(window))))
-                {
-                    
-                }
-                
-                if(sf::Mouse::getPosition(window) - sf::Vector2i(GUIBox::background.getPosition()))
-                {
-                    
-                }
-            }
-            */
-        }
-    }
-
-    protected:
-
-    sf::Vector2i mouse_pos_initial;
-    sf::Vector2i mouse_pos_final;
-    bool mouse_down;
+    const std::string& filename;
 
 };
 
@@ -276,6 +95,11 @@ int main()
     dynamic_cast<GUIBox*>(guiobject.back().get())->getBackground().setFillColor(sf::Color(120, 120, 120));
     dynamic_cast<GUIBox*>(guiobject.back().get())->setPosition(400, 200);
 
+    guiobject.emplace_back(new GUIButton(120, 20);
+    dynamic_cast<GUIBox*>(guiobject.back().get()->getBackground().setFillColor(sf::Color(80, 80, 80));
+    dynamic_cast<GUIBox*>(guiobject.back().get()->setPosition(500, 200);
+    Functor_open functor_open("filename.txt");
+    dynamic_cast<GUIBox*>(guiobject.back().get()->setCallback(functor_open));
 
     // program main loop
     while(window.isOpen())
