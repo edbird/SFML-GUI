@@ -4,8 +4,12 @@
 // Local headers
 #include "GUIBase.hpp"
 
-// SDL headers
+// SFML headers
 #include <SFML/Graphics.hpp>
+
+// C++ headers
+#include <iostream>
+
 
 class GUIBox : public GUIBase
 {

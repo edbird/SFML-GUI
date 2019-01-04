@@ -3,6 +3,7 @@
 #include "GUIBox.hpp"
 #include "GUIBoxDrag.hpp"
 #include "GUIButton.hpp"
+#include "GUIContextMenu.hpp"
 
 
 // SDL headers
@@ -18,7 +19,7 @@
 
 
 
-
+/*
 class Functor
 {
 
@@ -48,7 +49,7 @@ void open(const std::string& filename)
     std::cout << "open: read from file -> " << filename << std::endl;
 }
 
-void Functor_open : public Functor
+class Functor_open : public Functor
 {
 
     public:
@@ -69,6 +70,7 @@ void Functor_open : public Functor
     const std::string& filename;
 
 };
+*/
 
 
 int main()
@@ -92,14 +94,18 @@ int main()
     dynamic_cast<GUIBox*>(guiobject.at(0).get())->getBackground().setPosition(200, 200);
 
     guiobject.emplace_back(new GUIButton(120, 20));
-    dynamic_cast<GUIBox*>(guiobject.back().get())->getBackground().setFillColor(sf::Color(120, 120, 120));
-    dynamic_cast<GUIBox*>(guiobject.back().get())->setPosition(400, 200);
+    dynamic_cast<GUIButton*>(guiobject.back().get())->getBackground().setFillColor(sf::Color(120, 120, 120));
+    dynamic_cast<GUIButton*>(guiobject.back().get())->setPosition(400, 200);
 
-    guiobject.emplace_back(new GUIButton(120, 20);
-    dynamic_cast<GUIBox*>(guiobject.back().get()->getBackground().setFillColor(sf::Color(80, 80, 80));
-    dynamic_cast<GUIBox*>(guiobject.back().get()->setPosition(500, 200);
-    Functor_open functor_open("filename.txt");
-    dynamic_cast<GUIBox*>(guiobject.back().get()->setCallback(functor_open));
+    guiobject.emplace_back(new GUIButton(120, 20));
+    dynamic_cast<GUIButton*>(guiobject.back().get())->getBackground().setFillColor(sf::Color(80, 80, 80));
+    dynamic_cast<GUIButton*>(guiobject.back().get())->setPosition(550, 200);
+    //Functor_open functor_open("filename.txt");
+    //dynamic_cast<GUIBox*>(guiobject.back().get()->setCallback(functor_open));
+
+    guiobject.emplace_back(new GUIContextMenu());
+    dynamic_cast<GUIContextMenu*>(guiobject.back().get())->getBackground().setFillColor(sf::Color(128, 128, 128));
+    dynamic_cast<GUIContextMenu*>(guiobject.back().get())->setPosition(600, 50);
 
     // program main loop
     while(window.isOpen())
