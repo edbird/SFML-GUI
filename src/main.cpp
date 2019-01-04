@@ -73,6 +73,24 @@ class Functor_open : public Functor
 */
 
 
+class FontContainer
+{
+
+    public:
+
+    FontContainer(const std::string fontname)
+    {
+        //if()
+        font.loadFromFile(fontname);
+    }
+
+    protected:
+
+    sf::Font font;
+
+};
+
+
 int main()
 {
 
@@ -82,6 +100,9 @@ int main()
     ////////////////////////////////////////////////////////////////////////////
 
     // init SFML
+
+    std::map<std::string, std::unique_ptr<FontContainer>> fontmap;
+    //fontmap["NotoSans-Regular"] = std::move(new FontContainer("/usr/share/fonts/truetype/noto/NotoSans-Regular.ttf"));
 
     sf::RenderWindow window(sf::VideoMode(800, 600), "SFML GUI");
 
@@ -106,7 +127,11 @@ int main()
     guiobject.emplace_back(new GUIContextMenu());
     dynamic_cast<GUIContextMenu*>(guiobject.back().get())->getBackground().setFillColor(sf::Color(128, 128, 128));
     dynamic_cast<GUIContextMenu*>(guiobject.back().get())->setPosition(600, 50);
-
+    dynamic_cast<GUIContextMenu*>(guiobject.back().get())->addItem("item 1");
+    dynamic_cast<GUIContextMenu*>(guiobject.back().get())->addItem("item 2");
+    dynamic_cast<GUIContextMenu*>(guiobject.back().get())->addItem("item 3 A qj");
+    dynamic_cast<GUIContextMenu*>(guiobject.back().get())->addItem("item 4 very long name");
+    
     // program main loop
     while(window.isOpen())
     {

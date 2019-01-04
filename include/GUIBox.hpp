@@ -40,6 +40,18 @@ class GUIBox : public GUIBase
         background.setPosition(pos_x, pos_y);
     }
 
+    virtual
+    sf::Vector2f getPosition() const
+    {
+        return background.getPosition();
+    }
+
+    virtual
+    void setSize(const int width, const int height)
+    {
+        background.setSize(sf::Vector2f(width, height));
+    }
+
     sf::RectangleShape& getBackground()
     {
         return background;
@@ -49,6 +61,8 @@ class GUIBox : public GUIBase
 
     //sf::intRect background;
     sf::RectangleShape background;
+    // background holds background position and background size variables
+    // positions of sub objects are relative to the background position
 
 };
 
